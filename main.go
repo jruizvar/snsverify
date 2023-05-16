@@ -47,7 +47,7 @@ func (f *snsWriter) writeMessage(w http.ResponseWriter, r *http.Request) {
 	} else {
 		fmt.Println("Verification succeded")
 	}
-	// write subscribeURL to file
+	// write payload to file
 	u, err := json.MarshalIndent(payload, "", "  ")
 	if err != nil {
 		log.Fatal("unable to encode payload")
