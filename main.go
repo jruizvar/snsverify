@@ -1,38 +1,28 @@
 package main
 
 import (
-	"apichi/sns"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
+	"snsverify/sns"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
 
 type snsWriter struct {
-	f io.Writer
+	file io.Writer
 }
 
 func (w *snsWriter) Write(b []byte) (n int, err error) {
-	n, err = w.f.Write(b)
+	n, err = w.file.Write(b)
 	return
 }
 
-func (f *snsWriter) writeMessage(w http.ResponseWriter, r *http.Request) {
-	// write header to file
-	f.Write([]byte("Header\n\n"))
-	for key, field := range r.Header {
-		f.Write([]byte(key + ":\t"))
-		for _, v := range field {
-			f.Write([]byte(v + ", "))
-		}
-		f.Write([]byte("\n"))
-	}
-	f.Write([]byte("\n"))
+func (w *snsWriter) writeMessage(_ http.ResponseWriter, r *http.Request) {
 	// decode payload
 	payload := sns.GetData(r.Body)
 	defer r.Body.Close()
@@ -47,17 +37,17 @@ func (f *snsWriter) writeMessage(w http.ResponseWriter, r *http.Request) {
 	} else {
 		fmt.Println("Verification succeded")
 	}
-	// write payload to file
+	// encode payload and write to file
 	u, err := json.MarshalIndent(payload, "", "  ")
 	if err != nil {
 		log.Fatal("unable to encode payload")
 	}
-	fmt.Fprintf(f, "Payload\n\n%s\n\n", u)
+	fmt.Fprintf(w, "Payload\n\n%s\n\n", u)
 }
 
 func main() {
 	f, err := os.OpenFile(
-		"/home/ec2-user/apichi/data/messages.txt",
+		os.Args[1],
 		os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
 		panic(err)

@@ -1,8 +1,6 @@
 package sns
 
 import (
-	"crypto"
-	"crypto/rsa"
 	"encoding/json"
 	"io"
 	"log"
@@ -40,14 +38,4 @@ func (payload Payload) Confirm() (int, error) {
 		return http.StatusNoContent, err
 	}
 	return res.StatusCode, nil
-}
-
-func (payload Payload) Verify() error {
-	pub := payload.downloadCertificate()
-	hashed := payload.applyHash()
-	sig := payload.decodeSignature()
-	if payload.SignatureVersion == "1" {
-		return rsa.VerifyPKCS1v15(pub, crypto.SHA1, hashed, sig)
-	}
-	return rsa.VerifyPKCS1v15(pub, crypto.SHA256, hashed, sig)
 }

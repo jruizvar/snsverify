@@ -1,4 +1,4 @@
-module apichi
+module snsverify
 
 go 1.19
 
