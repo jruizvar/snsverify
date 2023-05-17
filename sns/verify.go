@@ -13,11 +13,11 @@ import (
 	"net/http"
 )
 
-func (payload Payload) Verify() error {
-	pub := payload.downloadCertificate()
-	hashed := payload.applyHash()
-	sig := payload.decodeSignature()
-	if payload.SignatureVersion == "1" {
+func (p Payload) Verify() error {
+	pub := p.downloadCertificate()
+	hashed := p.applyHash()
+	sig := p.decodeSignature()
+	if p.SignatureVersion == "1" {
 		return rsa.VerifyPKCS1v15(pub, crypto.SHA1, hashed, sig)
 	}
 	return rsa.VerifyPKCS1v15(pub, crypto.SHA256, hashed, sig)

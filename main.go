@@ -14,11 +14,11 @@ import (
 )
 
 type snsWriter struct {
-	file io.Writer
+	output io.Writer
 }
 
 func (w *snsWriter) Write(b []byte) (n int, err error) {
-	n, err = w.file.Write(b)
+	n, err = w.output.Write(b)
 	return
 }
 
@@ -46,20 +46,18 @@ func (w *snsWriter) writeMessage(_ http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	f, err := os.OpenFile(
-		os.Args[1],
-		os.O_WRONLY|os.O_CREATE, 0644)
+	output, err := os.OpenFile(os.Args[1], os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
 		panic(err)
 	}
-	defer f.Close()
+	defer output.Close()
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Hello World!"))
 	})
-	// Write header and payload in messages.txt
-	w := snsWriter{f}
+	// Write payload to output file
+	w := snsWriter{output}
 	r.Post("/sns", w.writeMessage)
 	http.ListenAndServe(":80", r)
 }

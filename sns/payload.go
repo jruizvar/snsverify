@@ -31,8 +31,8 @@ func GetData(r io.ReadCloser) Payload {
 	return payload
 }
 
-func (payload Payload) Confirm() (int, error) {
-	res, err := http.Get(payload.SubscribeURL)
+func (p Payload) Confirm() (int, error) {
+	res, err := http.Get(p.SubscribeURL)
 	if err != nil {
 		log.Fatal("unable to confirm the subscription")
 		return http.StatusNoContent, err
