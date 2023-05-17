@@ -23,12 +23,12 @@ type Payload struct {
 }
 
 func GetData(r io.ReadCloser) Payload {
-	var payload Payload
-	err := json.NewDecoder(r).Decode(&payload)
+	var p Payload
+	err := json.NewDecoder(r).Decode(&p)
 	if err != nil {
 		log.Fatal("unable to decode payload")
 	}
-	return payload
+	return p
 }
 
 func (p Payload) Confirm() (int, error) {
